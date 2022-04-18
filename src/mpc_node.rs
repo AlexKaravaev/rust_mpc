@@ -30,6 +30,7 @@ extern crate ndarray;
 use std::cmp::min;
 use std::convert::{TryFrom, TryInto};
 use std::env;
+use std::ops::IndexMut;
 use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
 
@@ -133,7 +134,7 @@ impl Mpc {
 
 
     /// Takes raceline and position of ego-vehicle and computer n_of_points closest waypoints in forward direction
-    pub fn desired_traj(&self, n_of_points: usize) -> Array2<f64> {
+    pub fn desired_traj(&self, n_of_points: usize) -> (Array2<f64>, Array2<f64>) {
 
         // Compute closest point on path to vehicle
         // First get the matrix of differences between path points and our current position
@@ -150,12 +151,45 @@ impl Mpc {
         let min_idx = euclidean_dist_mx.iter().enumerate().fold((0, euclidean_dist_mx[0]), |min, (ind, &val)| if val < min.1 { (ind, val) } else { min }).0;
 
         let mut slice_end = min_idx + n_of_points;
-
+        let mut x;
         if slice_end > raceline_path.dim().0 {
-            raceline_path.slice(s![0..(n_of_points), ..]).to_owned()
+            x = raceline_path.slice(s![0..(n_of_points), ..]).to_owned();
         } else {
-            raceline_path.slice(s![min_idx..(slice_end), ..]).to_owned()
+            x = raceline_path.slice(s![min_idx..(slice_end), ..]).to_owned();
         }
+        let mut prev_x = *x.row(0).get(0).unwrap();
+        let mut prev_y = *x.row(0).get(1).unwrap();
+        let mut prev_theta = *x.row(0).get(2).unwrap();
+        let mut dx = x.clone();
+        let mut cntr_row = 0;
+        for row in x.outer_iter() {
+
+
+            let x: f64 = *row.get(0).unwrap();
+            let y: f64 = *row.get(1).unwrap();
+            let theta = *row.get(2).unwrap();
+            dx.row_mut(cntr_row).assign(&array![x-prev_x, y-prev_y, theta-prev_theta]);
+            prev_x = x;
+            prev_y = y;
+            prev_theta = theta;
+            cntr_row+=1;
+        };
+        let omega_col: i32 = 2;
+        let y_col: i32 = 1;
+        let x_col: i32 = 0;
+
+        let dx_x = &dx.slice(s![..,x_col]).to_owned();
+        let dx_y = &dx.slice(s![..,y_col]).to_owned();
+
+
+        let omega = &dx.slice(s![..,omega_col]).to_owned();
+        let vx = dx_x * omega.mapv(|e| e.cos()) + dx_y * omega.mapv(|e| e.sin());
+        let vy = dx_x * omega.mapv(|e| e.sin()) - dx_y * omega.mapv(|e| e.cos());
+        let v = vx.mapv(|e| e.powi(2)) + vy.mapv(|e| e.powi(2));
+
+        let u = stack![Axis(1), v.view(), omega.view()];
+
+        (x.clone(), u)
     }
 
     pub fn callback(&self, msg: nav_msgs::msg::Odometry) {
@@ -200,7 +234,7 @@ impl MpcNode {
 
                     let mut msg = geometry_msgs::msg::PoseArray::default();
 
-                    let desired_path = mpc.desired_traj(10);
+                    let desired_path = mpc.desired_traj(10).0;
 
                     for row in desired_path.outer_iter() {
                         let mut pose = Pose::default();
