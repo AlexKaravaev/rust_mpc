@@ -9,21 +9,21 @@ def generate_launch_description():
     ld = LaunchDescription()
 
 
+    # mpc_node = Node(
+    #     package='rust_mpc',
+    #     executable='load_raceline.py',
+    #     name='load_raceline',
+    #     output='screen'
+    # )
     mpc_node = Node(
         package='rust_mpc',
-        executable='load_raceline.py',
-        name='load_raceline',
-        output='screen'
-    )
-    raceline_node = Node(
-        package='rust_mpc',
-        executable='mpc_node.py',
+        executable='mpc_node',
         name='mpc_node',
         output='screen'
     )
 
     # finalize
     ld.add_action(mpc_node)
-    ld.add_action(raceline_node)
+    # ld.add_action(raceline_node)
 
     return ld

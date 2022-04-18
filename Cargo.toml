@@ -1,0 +1,36 @@
+
+[package]
+name = "rust_mpc"
+version = "0.0.1"
+authors = ["Alex Karavaev <alexkaravev@gmail.com>"]
+
+[[bin]]
+name = "mpc_node"
+path = "src/mpc_node.rs"
+
+
+[package.metadata.ros]
+install_to_share = ["launch", "data", "rust_mpc"]
+
+[dependencies]
+anyhow = "1.0.56"
+ndarray = "0.15.4"
+csv = "1.1.6"
+
+[dependencies.rclrs]
+version = "*"
+
+[dependencies.rosidl_runtime_rs]
+version = "*"
+
+[dependencies.ament_rs]
+version = "*"
+
+[dependencies.std_msgs]
+version = "*"
+
+[dependencies.geometry_msgs]
+version = "*"
+
+[dependencies.nav_msgs]
+version = "*"
