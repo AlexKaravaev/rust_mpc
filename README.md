@@ -7,7 +7,7 @@ to do some applied robotics task.
 ## Dependencies
 * [ros2-rust](https://github.com/ros2-rust/ros2_rust)
 * [f1tenth-gym](https://github.com/f1tenth/f1tenth_gym)
-* [OpEn optimzer](https://alphaville.github.io/optimization-engine/)
+* [OpEn optimizer](https://alphaville.github.io/optimization-engine/)
 
 ## Quickstart
 
@@ -27,4 +27,4 @@ Also there are couple of racing maps included in this repo:
 * Silverstone
 
 To change the map simply change the name in config/sim.yaml. 
-Also you can download more race tracks from [f1tenth racing repo](https://github.com/f1tenth/f1tenth_racetracks)
+You can download more race tracks from [f1tenth racing repo](https://github.com/f1tenth/f1tenth_racetracks)
