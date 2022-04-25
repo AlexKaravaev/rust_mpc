@@ -10,17 +10,26 @@ path = "src/mpc_node.rs"
 
 
 [package.metadata.ros]
-install_to_share = ["launch", "data", "rust_mpc"]
+install_to_share = ["launch", "data", "rust_mpc", "config"]
 
 [dependencies]
 anyhow = "1.0.56"
 ndarray = "0.15.4"
 csv = "1.1.6"
+optimization_engine = "*"
+
+
+[dependencies.mpc_controller]
+path = "./src/mpc_controller"
+
 
 [dependencies.rclrs]
 version = "*"
 
 [dependencies.rosidl_runtime_rs]
+version = "*"
+
+[dependencies.serde_yaml]
 version = "*"
 
 [dependencies.ament_rs]
@@ -30,6 +39,9 @@ version = "*"
 version = "*"
 
 [dependencies.geometry_msgs]
+version = "*"
+
+[dependencies.ackermann_msgs]
 version = "*"
 
 [dependencies.nav_msgs]
