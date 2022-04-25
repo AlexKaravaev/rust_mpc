@@ -10,7 +10,7 @@ path = "src/mpc_node.rs"
 
 
 [package.metadata.ros]
-install_to_share = ["launch", "data", "rust_mpc", "config"]
+install_to_share = ["launch", "data", "config"]
 
 [dependencies]
 anyhow = "1.0.56"
