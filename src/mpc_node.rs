@@ -241,9 +241,7 @@ impl Mpc {
 
 struct MpcNode {
     mpc: Mpc,
-    // currently unused
     node: rclrs::node::Node,
-    // currently unused
     _odom_subscription: Arc<rclrs::node::Subscription<nav_msgs::msg::Odometry>>,
     raceline_publisher: rclrs::node::Publisher<geometry_msgs::msg::PoseArray>,
 }
